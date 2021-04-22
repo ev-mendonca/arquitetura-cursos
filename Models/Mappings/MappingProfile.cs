@@ -12,6 +12,10 @@ namespace Arquitetura_Curso_DIO.Models.Mappings
             CreateMap<User, UserResponse>(MemberList.None);
 
             CreateMap<CreateUserRequest, User>(MemberList.None);
+
+            CreateMap<CreateCourseRequest, Course>(MemberList.None);
+
+            CreateMap<Course, CourseResponse>(MemberList.None);
         }
     }
 }

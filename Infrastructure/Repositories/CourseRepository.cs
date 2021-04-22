@@ -24,7 +24,7 @@ namespace Arquitetura_Curso_DIO.Infrastructure.Repositories
             await _context.Courses.AddAsync(course);
         }
 
-        public async Task<Course> GetAsync(int id)
+        public async Task<Course> FindAsync(int id)
         {
             return await _context.Courses.FindAsync(id);
         }
@@ -32,6 +32,10 @@ namespace Arquitetura_Curso_DIO.Infrastructure.Repositories
         public async Task<IEnumerable<Course>> WhereAsync(Expression<Func<Course, bool>> predicate)
         {
             return await _context.Courses.Where(predicate).ToListAsync();
+        }
+        public async Task<Course> GetAsync(Expression<Func<Course, bool>> predicate)
+        {
+            return await _context.Courses.Include(x => x.Users).Where(predicate).FirstOrDefaultAsync();
         }
 
         public async Task SaveChangesAsync()

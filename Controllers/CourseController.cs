@@ -9,93 +9,78 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Arquitetura_Curso_DIO.Controllers
 {
-    [Route("api/user")]
+    [Route("api/courses")]
     [ApiController]
     [Authorize]
-    public class UserController : ControllerBase
+    public class CourseController : ControllerBase
     {
-        private readonly IUserRepository _userRepository;
         private readonly ICourseRepository _courseRepository;
         private readonly IMapper _mapper;
 
-        public UserController(IUserRepository userRepository, ICourseRepository courseRepository, IMapper mapper)
+        public CourseController(ICourseRepository courseRepository, IMapper mapper)
         {
-            _userRepository = userRepository;
             _courseRepository = courseRepository;
             _mapper = mapper;
         }
 
         /// <summary>
-        /// Endpoint para criação de uma novo usuário
+        /// Endpoint para criação de uma novo curso
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [SwaggerResponse(statusCode: 200, description:"Sucesso na criação de um usuário", type: typeof(UserResponse))]
+        [SwaggerResponse(statusCode: 200, description:"Sucesso na criação de um curso", type: typeof(CourseResponse))]
         [SwaggerResponse(statusCode: 400, description: "Parâmetro(s) de entrada inválido(s)", type: typeof(BadRequestResponse))]
         [SwaggerResponse(statusCode: 500, description: "Erro interno ocorreu", type: typeof(InternalServerErrorResponse))]
         [ValidateModelStateFilter]
         [HttpPost]
-        public async Task<IActionResult> PostAsync(CreateUserRequest request)
+        public async Task<IActionResult> PostAsync(CreateCourseRequest request)
         {
             try
             {
-                var user = _mapper.Map<User>(request);
+                var course = _mapper.Map<Course>(request);
 
-                await _userRepository.AddAsync(user);
+                await _courseRepository.AddAsync(course);
 
-                await _userRepository.SaveChangesAsync();
+                await _courseRepository.SaveChangesAsync();
 
-                return Created(user.Id.ToString(), _mapper.Map<UserResponse>(user));
+                return Created(course.Id.ToString(), _mapper.Map<CourseResponse>(course));
             }
             catch(Exception ex)
             {
                 return StatusCode(500, InternalServerErrorResponse.InternalServerErrofactory(ex));
             }
-            
         }
-
 
         /// <summary>
-        /// Endpoint para gerar uma matrícula do usuário logado em um curso
+        /// Endpoint para carregar um curso
         /// </summary>
-        /// <param name="courseId"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        [SwaggerResponse(statusCode: 200, description: "Sucesso na criação de um usuário", type: typeof(UserResponse))]
-        [SwaggerResponse(statusCode: 400, description: "Parâmetro(s) de entrada inválido(s)", type: typeof(BadRequestResponse))]
+        [SwaggerResponse(statusCode: 200, description: "Curso carregado e retornado", type: typeof(CourseResponse))]
         [SwaggerResponse(statusCode: 404, description: "Curso não encontrado.", type: typeof(NotFoundResponse))]
         [SwaggerResponse(statusCode: 500, description: "Erro interno ocorreu", type: typeof(InternalServerErrorResponse))]
-        [ValidateModelStateFilter]
-        [HttpPost]
-        [Route("me/courses")]
-        public async Task<IActionResult> PostCourseAsync([FromBody]int courseId)
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<IActionResult> GetAsync(int id)
         {
             try
             {
-                int loggedUserId = int.Parse(User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier).Value);
+                var course = await _courseRepository.GetAsync(x=>x.Id == id);
                 
-                var user = await _userRepository.WhereAsync(x => x.Id == loggedUserId);
+                if (course == null)
+                    return NotFound(new NotFoundResponse("Curso não encotrado. Identificador inválido"));
 
-                var course = await _courseRepository.FindAsync(courseId);
-
-                if(course == null)
-                    return NotFound(new NotFoundResponse("Curso não encontrado. identificador inválido."));
-
-                user.Courses.Add(course);
-
-                await _userRepository.SaveChangesAsync();
-
-                return Ok();
+                return Ok(_mapper.Map<CourseResponse>(course));
             }
             catch(Exception ex)
             {
                 return StatusCode(500, InternalServerErrorResponse.InternalServerErrofactory(ex));
             }
-            
         }
+
     }
 }
