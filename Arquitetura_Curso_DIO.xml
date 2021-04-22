@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Arquitetura_Curso_DIO</name>
+    </assembly>
+    <members>
+        <member name="M:Arquitetura_Curso_DIO.Controllers.AccountController.PostSignin(Arquitetura_Curso_DIO.Models.Requests.LoginRequest)">
+            <summary>
+            Endpoint para fazer login de um usuário
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Arquitetura_Curso_DIO.Controllers.CourseController.PostAsync(Arquitetura_Curso_DIO.Models.Requests.CreateUserRequest)">
+            <summary>
+            Endpoint para criação de uma novo usuário
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Arquitetura_Curso_DIO.Controllers.UserController.PostAsync(Arquitetura_Curso_DIO.Models.Requests.CreateUserRequest)">
+            <summary>
+            Endpoint para criação de uma novo usuário
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Arquitetura_Curso_DIO.Controllers.UserController.PostCourseAsync(System.Int32)">
+            <summary>
+            Endpoint para gerar uma matrícula do usuário logado em um curso
+            </summary>
+            <param name="courseId"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
